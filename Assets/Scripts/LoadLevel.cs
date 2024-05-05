@@ -3,23 +3,31 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
+[DefaultExecutionOrder(2)]
 public class LoadLevel :MonoBehaviour {
     public GameObject dotPrefab;
-    public int levelToLoadForTest;
+    public int levelToLoad;
+    private ReadLevelDataJson levelDataJson;
     //ReadLevelDataJson rldj = ;
     //public List<List<Dot>> listOfAllLevels = rldj.ReadDataToLevelList();
 
 
     private void Start() {
-        /*SpawnLevelDots(levelToLoadForTest, ReadLevelDataJson.ReadDataToLevelList());*/
+
+        levelDataJson = GetComponent<ReadLevelDataJson>(); // using this instead of new() keyword
+        List<List<Dot>> listOfAllLevels = levelDataJson.ReadDataToLevelList();
+        List<Dot> levelDots = listOfAllLevels[levelToLoad - 1];
+        Debug.Log("from LoadLevel class 1st level 1st coordinate for test: "+levelDots[0].x + " | " + levelDots[0].y);
+        SpawnLevelDots(levelToLoad, listOfAllLevels, levelDots);
     }
 
-    public void SpawnLevelDots(int level, List<List<Dot>> listOfAllLevels) {
+    public void SpawnLevelDots(int level, List<List<Dot>> listOfAllLevels, List<Dot> listOfLevelDots) {
         if (level >= 1 && level <= listOfAllLevels.Count) {
             Debug.Log("This level exists and we are loading it now");
             List<Dot> dotsForThisLevel = listOfAllLevels[level - 1];
-            foreach (Dot dot in dotsForThisLevel) {
+            Debug.Log("size of the dots list " + dotsForThisLevel.Count); // shows list not for this level, but all levels dots.
+            foreach (Dot dot in listOfLevelDots) {
+                //Debug.Log(dot.ToString());
                 GameObject newDot = Instantiate(dotPrefab,
                     new Vector3(dot.x.Value, dot.y.Value, 0f), Quaternion.identity);
             }
