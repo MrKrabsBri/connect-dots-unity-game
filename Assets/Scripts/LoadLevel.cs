@@ -23,6 +23,7 @@ public class LoadLevel :MonoBehaviour {
 
     public void SpawnLevelDots(int level, List<List<Dot>> listOfAllLevels, List<Dot> listOfLevelDots) {
         if (level >= 1 && level <= listOfAllLevels.Count) {
+            int numberOfDot = 1;
             Debug.Log("This level exists and we are loading it now");
             List<Dot> dotsForThisLevel = listOfAllLevels[level - 1];
             Debug.Log("size of the dots list " + dotsForThisLevel.Count); // shows list not for this level, but all levels dots.
@@ -30,6 +31,16 @@ public class LoadLevel :MonoBehaviour {
                 //Debug.Log(dot.ToString());
                 GameObject newDot = Instantiate(dotPrefab,
                     new Vector3(dot.x.Value, dot.y.Value, 0f), Quaternion.identity);
+
+                Text textField = newDot.GetComponentInChildren<Text>();
+                if (textField != null) {
+                    textField.text = numberOfDot.ToString();
+                    numberOfDot++;
+                }
+                else {
+                    Debug.LogWarning("Text field not found in instantiated object's hierarchy.");
+                }
+
             }
         }
         else {
