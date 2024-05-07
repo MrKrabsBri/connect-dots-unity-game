@@ -2,26 +2,45 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System;
 
-[DefaultExecutionOrder(2)]
+//[DefaultExecutionOrder(2)]
 public class LoadLevel :MonoBehaviour {
     public GameObject dotPrefab;
-    public int levelToLoad;
+   // public int levelToLoad;
     private ReadLevelDataJson levelDataJson;
-    //ReadLevelDataJson rldj = ;
-    //public List<List<Dot>> listOfAllLevels = rldj.ReadDataToLevelList();
+
+     void Start() {
+
+        try {
+            if (LevelSelector.buttonValue != null) {
+                 string buttonValue = LevelSelector.buttonValue;
+                 int level = int.Parse(buttonValue);
+                 SpawnLevelDots(level);
+                 }
+            else {
+                 Debug.LogWarning("Button value is null.");
+                 }
+        } catch (FormatException e) {
+            Debug.LogError("Button value is not a valid number: " + e.Message);
+        }
 
 
-    private void Start() {
+
+
+
+
+
+        //levelDataJson = GetComponent<ReadLevelDataJson>(); // using this instead of new() keyword
+        // SpawnLevelDots(levelToLoad);
+    }
+
+    public void SpawnLevelDots(int level) {
 
         levelDataJson = GetComponent<ReadLevelDataJson>(); // using this instead of new() keyword
         List<List<Dot>> listOfAllLevels = levelDataJson.ReadDataToLevelList();
-        List<Dot> levelDots = listOfAllLevels[levelToLoad - 1];
-        Debug.Log("from LoadLevel class 1st level 1st coordinate for test: "+levelDots[0].x + " | " + levelDots[0].y);
-        SpawnLevelDots(levelToLoad, listOfAllLevels, levelDots);
-    }
-
-    public void SpawnLevelDots(int level, List<List<Dot>> listOfAllLevels, List<Dot> listOfLevelDots) {
+        List<Dot> listOfLevelDots = listOfAllLevels[level - 1];
         if (level >= 1 && level <= listOfAllLevels.Count) {
             int numberOfDot = 1;
             Debug.Log("This level exists and we are loading it now");
