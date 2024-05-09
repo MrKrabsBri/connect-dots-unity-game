@@ -48,4 +48,3 @@ public class Point : Collidable, ClickInterface {
 
 
 
-

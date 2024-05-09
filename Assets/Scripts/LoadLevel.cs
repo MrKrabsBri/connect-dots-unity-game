@@ -6,34 +6,26 @@ using UnityEngine.SceneManagement;
 using System;
 
 //[DefaultExecutionOrder(2)]
-public class LoadLevel :MonoBehaviour {
+public class LoadLevel : MonoBehaviour {
     public GameObject dotPrefab;
-   // public int levelToLoad;
+    // public int levelToLoad;
     private ReadLevelDataJson levelDataJson;
 
-     void Start() {
+    void Start() {
 
         try {
-            if (LevelSelector.buttonValue != null) {
-                 string buttonValue = LevelSelector.buttonValue;
-                 int level = int.Parse(buttonValue);
-                 SpawnLevelDots(level);
-                 }
+            if (LevelSelectionHandler.buttonValue != null) {
+                string buttonValue = LevelSelectionHandler.buttonValue;
+                int level = int.Parse(buttonValue);
+                SpawnLevelDots(level);
+            }
             else {
-                 Debug.LogWarning("Button value is null.");
-                 }
+                Debug.LogWarning("Button value is null.");
+            }
         } catch (FormatException e) {
             Debug.LogError("Button value is not a valid number: " + e.Message);
         }
 
-
-
-
-
-
-
-        //levelDataJson = GetComponent<ReadLevelDataJson>(); // using this instead of new() keyword
-        // SpawnLevelDots(levelToLoad);
     }
 
     public void SpawnLevelDots(int level) {
@@ -68,56 +60,3 @@ public class LoadLevel :MonoBehaviour {
     }
 
 }
-
-
-
-
-/*[System.Serializable]
-public class LevelData {
-    public List<string> level_data;
-}*//*
-
-public class LoadLevel : MonoBehaviour
-{
-    public GameObject pointPrefab;
-    public ListOfAllLevels levelDataWrapper;
-
-    // Start is called before the first frame update
-    void Start() {
-        SpawnLevelPoints(0);
-    }
-
-
-    public void SpawnLevelPoints(int levelToLoad) {
-
-        Debug.Log(levelDataWrapper.levels.Length);
-
-        if (levelToLoad < 0 || levelToLoad >= levelDataWrapper.levels.Length) {
-
-            Debug.LogError("Invalid level index: " + levelToLoad);
-            return;
-        }
-
-        LevelData level = levelDataWrapper.levels[levelToLoad];
-
-        foreach (string coordinate in level.level_data) {
-            Debug.Log("Spawned at " + coordinate);
-        }
-
-
-*//*        LevelDataWrapper listOfAllLevels = rldj.ReadDataFromJson();
-        LevelData dataOfALevel = listOfAllLevels.levels[level];
-
-        foreach(LevelData currentLevel in listOfAllLevels.levels) {
-            foreach (string coordinate in currentLevel.level_data) {
-                Debug.Log(currentLevel.level_data[0]);
-            }
-
-        }
-
-        Debug.Log(dataOfALevel.level_data);*//*
-    }
-
-
-}
-*/
