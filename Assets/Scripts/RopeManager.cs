@@ -1,40 +1,65 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
 using UnityEngine;
 
-public class RopeManager : MonoBehaviour
-{
+public class RopeManager : MonoBehaviour {
+
+    public Transform startPoint;
+    public Transform targetPoint;
+
     public GameObject ropePrefab;
-    private GameObject startPoint;
-    private GameObject endPoint;
-    private GameObject currentRope;
+    private GameObject instantiatedRope;
 
-    // Start is called before the first frame update
+    public AnimationClip ropeAnimationClip;
+    private Animation ropeAnimation;
+    private bool isAnimationPlaying;
+
+
+    //change to Update later
     private void Start() {
-        // Initialize variables
-        startPoint = null;
-        endPoint = null;
-        currentRope = null;
+        Debug.Log("hi");
+
+        SpawnRope();
+        //LengthenRope();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    private void Update() {
+
     }
 
-    private void CreateRope() {
-        // Calculate midpoint between start and end points
-        Vector3 midpoint = (startPoint.transform.position + endPoint.transform.position) / 2f;
+    public void SpawnRope() {// Calculate direction vector from start point to target point
+        Vector3 direction = targetPoint.position - startPoint.position;
 
-        // Instantiate rope prefab
-        currentRope = Instantiate(ropePrefab, midpoint, Quaternion.identity);
+        // Calculate the angle in radians between the direction vector and the positive z-axis
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
-        // Position and rotate the rope
-        currentRope.transform.LookAt(endPoint.transform);
-        float ropeLength = Vector3.Distance(startPoint.transform.position, endPoint.transform.position);
-        currentRope.transform.localScale = new Vector3(1, 1, ropeLength);
+        // Create a quaternion rotation around the z-axis using the calculated angle
+        Quaternion rotation = Quaternion.Euler(0f, 0f, angle);
+
+        // Adjust rotation to make bottom middle face target point
+        rotation *= Quaternion.Euler(0f, 0f, 90f);
+
+        // Spawn the rope with the rotation towards the target point
+        GameObject rope = Instantiate(ropePrefab, startPoint.position, rotation);
+
+        // Optionally, you can adjust the position of the rope to match the start point
+        //rope.transform.position = startPoint.position;
     }
+
+
+
+
+
+    private void OnMouseDown() {
+        // Disable collider to prevent further clicks
+        GetComponent<Collider2D>().enabled = false;
+    }
+
+/*    private void OnTriggerEnter2D(Collider2D collision) {
+        // Stop the rope animation when it reaches Dot2
+        if (collision.gameObject == ropePrefab) {
+            ropeAnimationClip.Stop();
+        }
+    }*/
 
 }
