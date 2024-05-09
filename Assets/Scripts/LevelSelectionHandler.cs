@@ -10,14 +10,21 @@ public class LevelSelectionHandler : MonoBehaviour
 {
     public static string buttonValue;
 
-    public void ButtonClicked(Button button) {
+    public void LevelButtonClicked(Button button) {
         buttonValue = button.GetComponentInChildren<Text>().text;
         Debug.Log(buttonValue);
-        OpenScene();
-
+        OpenGameScene();
     }
 
-    public void OpenScene() {
+    public void MainMenuButtonClicked() {
+        OpenMainMenuScene();
+    }
+
+    public void OpenGameScene() {
         SceneManager.LoadScene("Main Scene");
+    }
+
+    public void OpenMainMenuScene() {
+        SceneManager.LoadScene("Level Selection");
     }
 }

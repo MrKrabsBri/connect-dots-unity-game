@@ -8,21 +8,30 @@ public class Point : Collidable, ClickInterface {
 
     public Sprite checkedPoint;
 
-    private void OnTriggerEnter2D(Collider2D other) {
-        OnCollide(other);
-    }
+/*    private void OnTriggerEnter2D(Collider2D other) {
+       // OnCollide(other);
+    }*/
 
     protected override void Update() {
         ButtonClicked(0);
     }
 
-    protected override void OnCollide(Collider2D coll) {
-        Debug.Log("Collided with " + coll.name);
-        if (coll.CompareTag("Point")) {
-            SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-            spriteRenderer.sprite = checkedPoint;
-        }
+    /*    protected override void OnCollide(Collider2D coll) {
+            Debug.Log("Collided with " + coll.name);
+            if (coll.CompareTag("Point")) {
+                Debug.Log("changing color");
+                SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+                spriteRenderer.sprite = checkedPoint;
+            }
+        }*/
+
+    // This method is called when another collider enters the trigger collider attached to this GameObject
+    private void OnTriggerEnter2D(Collider2D other) {
+        Debug.Log("Collision detected with: " + other.gameObject.name);
+
+        // You can add more logic here to handle the collision
     }
+
 
     public void ButtonClicked(int button) {
         if (Input.GetMouseButtonDown(button)) {
