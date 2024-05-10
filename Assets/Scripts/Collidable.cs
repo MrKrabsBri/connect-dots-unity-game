@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Collidable : MonoBehaviour {
 
-    private BoxCollider2D boxCollider;
+/*    private BoxCollider2D boxCollider;
 
     public ContactFilter2D filter;
 
@@ -30,6 +30,6 @@ public class Collidable : MonoBehaviour {
     protected virtual void OnCollide(Collider2D coll) {
         Debug.Log("collided with " + coll.name);
 
-    }
+    }*/
 
 }

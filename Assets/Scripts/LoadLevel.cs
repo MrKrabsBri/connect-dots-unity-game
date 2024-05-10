@@ -10,25 +10,28 @@ public class LoadLevel : MonoBehaviour {
     public GameObject dotPrefab;
     // public int levelToLoad;
     private ReadLevelDataJson levelDataJson;
+    List<Dot> dotsOfSelectedLevel;
 
     void Start() {
 
-        try {
+/*        try {
             if (LevelSelectionHandler.buttonValue != null) {
                 string buttonValue = LevelSelectionHandler.buttonValue;
                 int level = int.Parse(buttonValue);
-                SpawnLevelDots(level);
+                //-----------#########-----------
+                dotsOfSelectedLevel = SpawnLevelDots(level);
+                //----------------------------------
             }
             else {
                 Debug.LogWarning("Button value is null.");
             }
         } catch (FormatException e) {
             Debug.LogError("Button value is not a valid number: " + e.Message);
-        }
+        }*/
 
     }
 
-    public void SpawnLevelDots(int level) {
+    public List<Dot> SpawnLevelDots(int level) {
 
         levelDataJson = GetComponent<ReadLevelDataJson>(); // using this instead of new() keyword
         List<List<Dot>> listOfAllLevels = levelDataJson.ReadDataToLevelList();
@@ -42,7 +45,6 @@ public class LoadLevel : MonoBehaviour {
                 //Debug.Log(dot.ToString());
                 GameObject newDot = Instantiate(dotPrefab,
                     new Vector3(dot.x.Value, dot.y.Value, 0f), Quaternion.identity);
-
                 Text textField = newDot.GetComponentInChildren<Text>();
                 if (textField != null) {
                     textField.text = numberOfDot.ToString();
@@ -57,6 +59,7 @@ public class LoadLevel : MonoBehaviour {
         else {
             Debug.LogWarning("Level " + level + " does not exist.");
         }
+        return listOfLevelDots;
     }
 
 }

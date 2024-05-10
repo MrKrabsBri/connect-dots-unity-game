@@ -11,7 +11,7 @@ public class RopeManager : MonoBehaviour {
     public GameObject ropePrefab;
     private GameObject instantiatedRope;
     private SpriteRenderer ropeSpriteRenderer;
-    float spriteHeight;
+    float ropeHeight;
 
 
 
@@ -25,8 +25,8 @@ public class RopeManager : MonoBehaviour {
         ropeSpriteRenderer = instantiatedRope.GetComponent<SpriteRenderer>();
 
         if (ropeSpriteRenderer != null) {
-            spriteHeight = ropeSpriteRenderer.sprite.bounds.size.y;
-            Debug.Log("Sprite Height: " + spriteHeight);
+            ropeHeight = ropeSpriteRenderer.sprite.bounds.size.y;
+            Debug.Log("Sprite Height: " + ropeHeight);
         }
 
 
@@ -37,10 +37,10 @@ public class RopeManager : MonoBehaviour {
     }
 
     private void Update() {
-        spriteHeight = ropeSpriteRenderer.size.y;
+        ropeHeight = ropeSpriteRenderer.size.y;
         //Debug.Log("Sprite Height: " + spriteHeight);
 
-        if (spriteHeight >= FindDistanceBetweenDots(firstPoint, secondPoint)) {
+        if (ropeHeight >= FindDistanceBetweenDots(firstPoint, secondPoint)) {
             StopAnimation(instantiatedRope);
         }
 
@@ -48,7 +48,7 @@ public class RopeManager : MonoBehaviour {
     }
 
 
-    private IEnumerator DelayedAction() {
+/*    private IEnumerator DelayedAction() {
         Debug.Log("Action will be delayed for 3 seconds...");
         // Wait for 3 seconds
         yield return new WaitForSeconds(2f);
@@ -56,7 +56,7 @@ public class RopeManager : MonoBehaviour {
         StopAnimation(instantiatedRope);
         Debug.Log("Action performed after delay.");
         Debug.Log("Thx for waiting");
-    }
+    }*/
 
     void StopAnimation(GameObject rope) {
         // Get the Animator component from the GameObject

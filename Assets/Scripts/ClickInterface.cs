@@ -6,7 +6,7 @@ public interface ClickInterface
 {
 
     // Update is called once per frame
-    public virtual void ButtonClicked(int button) {
+    public virtual void PointClicked(int button) {
     }
 
 }
