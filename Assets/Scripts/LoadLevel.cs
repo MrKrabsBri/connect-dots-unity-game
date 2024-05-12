@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System;
+//using System.Diagnostics;
 
 //[DefaultExecutionOrder(2)]
 public class LoadLevel : MonoBehaviour {
@@ -11,23 +12,24 @@ public class LoadLevel : MonoBehaviour {
     // public int levelToLoad;
     private ReadLevelDataJson levelDataJson;
     List<Dot> dotsOfSelectedLevel;
+    public static List<GameObject> listOfInstantiatedDots = new List<GameObject>();
 
     void Start() {
 
-/*        try {
-            if (LevelSelectionHandler.buttonValue != null) {
-                string buttonValue = LevelSelectionHandler.buttonValue;
-                int level = int.Parse(buttonValue);
-                //-----------#########-----------
-                dotsOfSelectedLevel = SpawnLevelDots(level);
-                //----------------------------------
-            }
-            else {
-                Debug.LogWarning("Button value is null.");
-            }
-        } catch (FormatException e) {
-            Debug.LogError("Button value is not a valid number: " + e.Message);
-        }*/
+        /*        try {
+                    if (LevelSelectionHandler.buttonValue != null) {
+                        string buttonValue = LevelSelectionHandler.buttonValue;
+                        int level = int.Parse(buttonValue);
+                        //-----------#########-----------
+                        dotsOfSelectedLevel = SpawnLevelDots(level);
+                        //----------------------------------
+                    }
+                    else {
+                        Debug.LogWarning("Button value is null.");
+                    }
+                } catch (FormatException e) {
+                    Debug.LogError("Button value is not a valid number: " + e.Message);
+                }*/
 
     }
 
@@ -45,16 +47,24 @@ public class LoadLevel : MonoBehaviour {
                 //Debug.Log(dot.ToString());
                 GameObject newDot = Instantiate(dotPrefab,
                     new Vector3(dot.x.Value, dot.y.Value, 0f), Quaternion.identity);
+
+                listOfInstantiatedDots.Add(newDot); //THIS!!
+
+
+                //Dot testDot = newDot.GetComponent<Dot>();
                 Text textField = newDot.GetComponentInChildren<Text>();
                 if (textField != null) {
                     textField.text = numberOfDot.ToString();
                     numberOfDot++;
                 }
                 else {
-                    Debug.LogWarning("Text field not found in instantiated object's hierarchy.");
+                    Debug.LogWarning("Text field not found in instantiated object.");
                 }
-
             }
+/*            foreach (GameObject o in listOfInstantiatedDots) {
+                Debug.Log("list of inst dots [0] " + o.GetComponentInChildren<Text>().text);
+            }  WORKS! */
+
         }
         else {
             Debug.LogWarning("Level " + level + " does not exist.");

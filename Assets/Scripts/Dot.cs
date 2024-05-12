@@ -18,4 +18,6 @@ public class Dot {
         this.id = id;
         this.currentlyAtThisDot = currentlyAtThisDot;
     }
+
+    //public Dot() { }
 }
