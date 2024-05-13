@@ -5,58 +5,93 @@ using UnityEngine;
 
 public class RopeManager : MonoBehaviour {
 
+    //public GameManager gameManager;
+    public LoadLevel loadLevel;
+
     public Transform firstPoint;
     public Transform secondPoint;
+    public GameObject currentInstantiatedRope;
 
     public GameObject ropePrefab;
-    private GameObject instantiatedRope;
     private SpriteRenderer ropeSpriteRenderer;
-    float ropeHeight;
+    public float ropeHeight;
 
 
+    public bool ropeIsStillDrawing = false;
+
+
+
+    public void StartUpdateOfRopeDrawClass() {
+        ropeIsStillDrawing = true;
+    }
+    public void StopUpdateOfRopeDrawClass() {
+        ropeIsStillDrawing = false;
+    }
 
     //change to Update later
     private void Start() {
         Debug.Log("hi");
+        loadLevel = GetComponent<LoadLevel>();
+        //StartUpdateOfRopeDrawClass();
 
-
-
-        instantiatedRope = SpawnRope(firstPoint,secondPoint);
-        ropeSpriteRenderer = instantiatedRope.GetComponent<SpriteRenderer>();
-
-        if (ropeSpriteRenderer != null) {
-            ropeHeight = ropeSpriteRenderer.sprite.bounds.size.y;
-            Debug.Log("Sprite Height: " + ropeHeight);
-        }
+        /*currentInstantiatedRope = SpawnRope(firstPoint, secondPoint); //GOOD kitoj klasej | test with this in test scene
+        StartUpdateOfRopeDrawClass(); //GOOD kitoj klasej | test with this in test scene */
 
 
         //StartCoroutine(DelayedAction());
-        float? distance = FindDistanceBetweenDots(firstPoint, secondPoint);
-        Debug.Log("Distance between object1 and object2: " + distance);
+        /* float? distance = FindDistanceBetweenDots(firstPoint, secondPoint);
+         Debug.Log("Distance between Point1 and Point2: " + distance);*/
 
     }
 
     private void Update() {
-        ropeHeight = ropeSpriteRenderer.size.y;
-        //Debug.Log("Sprite Height: " + spriteHeight);
 
-        if (ropeHeight >= FindDistanceBetweenDots(firstPoint, secondPoint)) {
-            StopAnimation(instantiatedRope);
-        }
 
+
+            // Optionally, find the distance between dots and perform other checks
+            // This depends on your game's logic
+
+        /*        ropeHeight = ropeSpriteRenderer.size.y;
+
+                if (ropeHeight >= FindDistanceBetweenDots(firstPoint, secondPoint)) {
+                    StopAnimation(instantiatedRope);
+                }*/
+
+        /*        if (Input.GetMouseButtonDown(0)) {
+                    Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
+                    if (hit.collider != null && hit.collider.gameObject.tag == "Point" && !ropeIsStillDrawing) {
+                        Debug.Log("Will draw a line towards " + hit.collider.gameObject.name);
+
+                        currentInstantiatedRope = SpawnRope(firstPoint, secondPoint); //GOOD kitoj klasej | test with this in test scene
+                        ropeIsStillDrawing = true;//StartUpdateOfRopeDrawClass(); //GOOD kitoj klasej | test with this in test scene
+                    }
+
+
+                    if (ropeIsStillDrawing) { //sitas buvo good | test with this in test scene
+                        CheckIfRopeIsTooLong(currentInstantiatedRope, firstPoint, secondPoint);
+                    }*/  // sita atkomentuok jei nori test
+
+
+
+        //}
 
     }
 
+    public bool RopeHasReachedPoint(GameObject rope, Transform startPoint, Transform targetPoint) {
+        //firstPoint = startPoint;
+        //secondPoint = targetPoint;
+        ropeSpriteRenderer = rope.GetComponent<SpriteRenderer>();
+        ropeHeight = ropeSpriteRenderer.size.y;
 
-/*    private IEnumerator DelayedAction() {
-        Debug.Log("Action will be delayed for 3 seconds...");
-        // Wait for 3 seconds
-        yield return new WaitForSeconds(2f);
-        //instantiatedRope = SpawnRope();
-        StopAnimation(instantiatedRope);
-        Debug.Log("Action performed after delay.");
-        Debug.Log("Thx for waiting");
-    }*/
+        if (ropeHeight >= FindDistanceBetweenDots(startPoint, targetPoint)) {
+            StopAnimation(rope);
+            return true;
+        }
+        return false;
+    }
+
+
 
     void StopAnimation(GameObject rope) {
         // Get the Animator component from the GameObject
@@ -67,6 +102,8 @@ public class RopeManager : MonoBehaviour {
     }
 
     public GameObject SpawnRope(Transform startPoint, Transform targetPoint) {// Calculate direction vector from start point to target point
+
+
         Vector3 direction = targetPoint.position - startPoint.position;
 
         // Calculate the angle in radians between the direction vector and the positive z-axis
@@ -81,6 +118,8 @@ public class RopeManager : MonoBehaviour {
         // Spawn the rope with the rotation towards the target point
         GameObject rope = Instantiate(ropePrefab, startPoint.position, rotation);
 
+        ropeSpriteRenderer = rope.GetComponent<SpriteRenderer>();
+        currentInstantiatedRope = rope;
         return rope;
     }
 

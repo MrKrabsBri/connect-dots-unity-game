@@ -42,8 +42,9 @@ public class ClickHandler : MonoBehaviour,  ClickInterface {
                 Debug.Log("Clicked on: " + hit.collider.gameObject.name);
 
                 if (hit.collider.gameObject.tag == "Point") {
-                    hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite =
-                        checkedPoint;
+                    hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = checkedPoint;
+
+                    hit.collider.gameObject.GetComponent<CircleCollider2D>().enabled = false; //gal reiks comment
                 }
 
 
