@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 public class GameManager : MonoBehaviour {
     //private ReadLevelDataJson readlevelDataJson;
@@ -21,6 +23,7 @@ public class GameManager : MonoBehaviour {
     private bool previousPointIsClicked = false;
     private bool firstPointWasClicked = false;
     private bool ropeIsDrawing = false;
+    private bool ropeIsWaitingToBeDrawn = false;
     RaycastHit2D hit;
 
     Transform start;
@@ -49,7 +52,6 @@ public class GameManager : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-
 
 
 
@@ -109,49 +111,72 @@ public class GameManager : MonoBehaviour {
             if (hit.collider != null && hit.collider.gameObject.tag == "Point"
                 && (int.Parse(hit.collider.gameObject.GetComponentInChildren<Text>().text) != 1)
                 && firstPointWasClicked /*take a look ar reik*/
-                && previousPointIsClicked/*idk ar reik?*/ && !ropeIsDrawing) {
+                && previousPointIsClicked/*idk ar reik?*/
+                && !ropeIsDrawing) {
 
                 HandleDrawingRope(hit);
+
             }
-            /*            if (hit.collider != null && hit.collider.gameObject == LoadLevel.listOfInstantiatedDots[1]
-                                        && firstPointWasClicked && previousPointIsClicked && !ropeIsDrawing) {
-                            Debug.Log("You hit second point, it turns blue, drawing rope.");  //test
-                            Debug.Log("you hit point number: " + hit.collider.gameObject.GetComponentInChildren<Text>().text);
 
-                            start = LoadLevel.listOfInstantiatedDots[0].transform;
-                            //Debug.Log(start.position.x);
-                            target = LoadLevel.listOfInstantiatedDots[1].transform;
+            /*            if (hit.collider != null && hit.collider.gameObject.tag == "Point"              // Testing no coroutines
+                            && (int.Parse(hit.collider.gameObject.GetComponentInChildren<Text>().text) != 1)
+                            && firstPointWasClicked                 //take a look ar reik
+                            && previousPointIsClicked               //idk ar reik?
+                            && ropeIsDrawing) {
 
-                            spawnedRope = ropeManager.SpawnRope(start, target);
-                            previousPointIsClicked = false;
-                            ropeIsDrawing = true;
+                            ropeDrawingIsOnHold = true;
+                        }*/
 
-                        }*/   // GOOD HARDCODED EXAMPLE
+
         }
+
         if (spawnedRope != null && ropeIsDrawing) {
             ropeIsDrawing = !ropeManager.RopeHasReachedPoint(spawnedRope, start, target);
-            /*if (!ropeIsDrawing)
-                EnableOrDisablePoints(LoadLevel.listOfInstantiatedDots, true);*/  // Ko gero nenaudosiu sito 05.14
+            //if (!ropeIsDrawing)
+            //EnableOrDisablePoints(LoadLevel.listOfInstantiatedDots, true);  // Ko gero nenaudosiu sito 05.14
+
+            if (ropeIsWaitingToBeDrawn && !ropeIsDrawing) {
+                HandleDrawingRope(hit); // hit gali buti klaidu nes sena value idedama
+            }
+
             Debug.Log("has rope reached yet? :" + ropeManager.RopeHasReachedPoint(spawnedRope, start, target));
 
-        }
+        }   // uzkomentavau tik kol coroutine testuoju
 
 
-        /*            while (ropeIsDrawing) {
-                        ropeIsDrawing = !ropeManager.RopeHasReachedPoint(spawnedRope, start, target);
-                    }*/
+
     }
 
     public void HandleDrawingRope(RaycastHit2D rayHit) {
         int numberOfClickedPoint = int.Parse(rayHit.collider.gameObject.GetComponentInChildren<Text>().text);//  (2)
+        Debug.Log(numberOfClickedPoint);
         target = LoadLevel.listOfInstantiatedDots[numberOfClickedPoint - 1].transform;                  // liste (1)
         start = LoadLevel.listOfInstantiatedDots[numberOfClickedPoint - 2].transform;                  // liste (0)
-        spawnedRope = ropeManager.SpawnRope(start, target);
-        LoadLevel.listOfInstantiatedDots[numberOfClickedPoint].GetComponent<CircleCollider2D>().enabled = true;
+        //***StartCoroutine(DrawRopeCoroutine(start, target)); // su coroutine irgi works, bet basic, kaip ir be ju
+        Debug.Log(numberOfClickedPoint);
+       spawnedRope = ropeManager.SpawnRope(start, target); // komentuoju tik del coroutines testing 05.14
+        if (LoadLevel.listOfInstantiatedDots[numberOfClickedPoint] == null) {
+            Debug.Log("its NULL");
+            spawnedRope = ropeManager.SpawnRope(LoadLevel.listOfInstantiatedDots[0].transform, target);
+        }
+        else {
+            LoadLevel.listOfInstantiatedDots[numberOfClickedPoint].GetComponent<CircleCollider2D>().enabled = true;
+        }
+
+
+        if (ropeIsDrawing) {
+            ropeIsWaitingToBeDrawn = true;
+        }
+        if (!ropeIsDrawing) {
+            ropeIsWaitingToBeDrawn = false;
+        }
+
         //previousPointIsClicked = false;
         ropeIsDrawing = true;
-        /*EnableOrDisablePoints(LoadLevel.listOfInstantiatedDots, false);*/  // ko gero nenaudosiu
-        //handle last click, list out of bounds
+        //StartCoroutine(CheckIfRopeIsDrawnCoroutine(start, target));  //***veikia, kai su basic coroutines
+
+
+        //Important!! handle last click, list out of bounds
     }
 
     public void EnableOrDisablePoints(List<GameObject> points, bool EnableOrDisable) {
@@ -161,6 +186,42 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    /*        // Check if a pre-click has occurred and if the rope is currently drawing
+        if (ropeIsDrawing && previousPointIsClicked) {
+            // If the rope is drawing and a pre-click has occurred, start drawing from the previous point to the current point
+            StartCoroutine(DrawRopeCoroutine(start, target));
+            previousPointIsClicked = false; // Reset the pre-click flag
+        }
+        else {
+            // Otherwise, initiate the rope drawing process from the current point to the next point
+            StartCoroutine(DrawRopeCoroutine(start, target));
+            previousPointIsClicked = true; // Set the pre-click flag to indicate a pre-click has occurred
+        }*/
+    IEnumerator DrawRopeCoroutine(Transform start, Transform target) {
+        ropeIsDrawing = true;
+        // Spawn the rope
+        spawnedRope = ropeManager.SpawnRope(start, target);
+
+        yield return new WaitUntil(() => ropeManager.RopeHasReachedPoint(spawnedRope, start, target));
+        ropeIsDrawing = false;
+
+    }
+
+
+
+
+    /*    IEnumerator MyCoroutine() {                                   // Testing
+            // Wait until the condition is satisfied
+            while (spawnedRope != null && ropeIsDrawing) {
+                yield return null; // Wait for one frame
+            }
+
+            // Once the condition is satisfied, continue with the code
+            Debug.Log("Condition satisfied! Drawing next rope that I clicked on");
+
+            // Your attack code goes here
+        }*/
+
     //list of Dots of this level - starts at 0       accessed with:  dotsOfSelectedLevel[0].id.ToString()
     //currentPoint skaitliukas - starts at 0;
     //pointClicked - starts at 1;                    acessed with:   hit.collider.gameObject.GetComponentInChildren<Text>().text;
@@ -168,54 +229,7 @@ public class GameManager : MonoBehaviour {
     // get list of instantiated objects with         LoadLevel.listOfInstantiatedDots
     //                  LoadLevel.listOfInstantiatedDots[numberOfPoint].GetComponent<CircleCollider2D>().enabled = true;
 
-    /*    public void OnNextPointClick(RaycastHit2D hit) {
-
-
-            //int number = int.Parse(point.GetComponentInChildren<Text>().text);
-
-            int numberOfPoint = int.Parse(hit.collider.gameObject.GetComponentInChildren<Text>().text);
-            //pvz spaudziam ant number = 1
-            //active pasidaro point 2.
-            //point1 pasidaro NEactive
-
-            LoadLevel.listOfInstantiatedDots[numberOfPoint].GetComponent<CircleCollider2D>().enabled = true;
-            LoadLevel.listOfInstantiatedDots[numberOfPoint - 1].GetComponent<CircleCollider2D>().enabled = false;
-            if (numberOfPoint != 1) {
-                GameObject newSpawnedRope = ropeManager.SpawnRope(LoadLevel.listOfInstantiatedDots[numberOfPoint - 1].transform,
-                                LoadLevel.listOfInstantiatedDots[numberOfPoint].transform);
-                ropeManager.currentInstantiatedRope = newSpawnedRope;
-                ropeManager.firstPoint = LoadLevel.listOfInstantiatedDots[numberOfPoint - 1].transform;
-                ropeManager.secondPoint = LoadLevel.listOfInstantiatedDots[numberOfPoint].transform;
-
-                //StartUpdateOfRopeDrawClass();
-            }
-
-
-
-            *//*            OnClickDrawRope(dotsOfSelectedLevel, hit, );*//*
-
-        }*/
-
-    //}
-    /*    public void RunTheGame() {
-            //turn off colliders of all gameObjects except no.1
-
-            // while (!levelIsCompleted) {
-            foreach (GameObject point in LoadLevel.listOfInstantiatedDots) {
-                point.GetComponent<CircleCollider2D>().enabled = false;
-            }
-            LoadLevel.listOfInstantiatedDots[0].GetComponent<CircleCollider2D>().enabled = true;
-            currentPoint = int.Parse(LoadLevel.listOfInstantiatedDots[0].GetComponentInChildren<Text>().text);
-
-            // metodas i kurio argument idedame paspausta mygtuka (jo nr? idk). tada metodas uzlockina visus mygtukus
-            //except sekanti, / ta paspausta padaro blue/ i ta paspausta piesia line.
-
-
-
-            //if currentPoint is clicked (if its blue/ if its value changes???)
-            //LoadLevel.listOfInstantiatedDots[1].GetComponent<CircleCollider2D>().enabled = true;
-
-        }*/
+    /*
 
     //list of Dots of this level - starts at 0          accessed with:  dotsOfSelectedLevel[0].id.ToString()
     //currentPoint skaitliukas - starts at 0;
@@ -225,27 +239,7 @@ public class GameManager : MonoBehaviour {
     // LoadLevel.listOfInstantiatedDots[0].GetComponent<CircleCollider2D>().enabled = true;
 
 
-
-    /*    public void OnClickDrawRope(List<Dot> listOfPoints) {
-
-            if (Input.GetMouseButtonDown(0)) {
-                    Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
-
-                    if (hit.collider != null) {
-                        Debug.Log("Will draw a line towards " + hit.collider.gameObject.name);
-
-                        nextPointClicked = int.Parse(hit.collider.gameObject.GetComponentInChildren<Text>().text);
-
-
-                        Debug.Log("the text of clicked dot is : " + hit.collider.gameObject.
-                            GetComponentInChildren<Text>().text);
-
-                        Debug.Log("Meanwhile, the id of dot nr. 4 is : " + listOfPoints[3].id);
-                        Debug.Log("+++++++++++++++++");
-                    }
-                }
-        }*/
+    */
 
 
 
