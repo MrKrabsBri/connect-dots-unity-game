@@ -44,39 +44,7 @@ public class RopeManager : MonoBehaviour {
 
     }
 
-    private void Update() {
 
-
-
-            // Optionally, find the distance between dots and perform other checks
-            // This depends on your game's logic
-
-        /*        ropeHeight = ropeSpriteRenderer.size.y;
-
-                if (ropeHeight >= FindDistanceBetweenDots(firstPoint, secondPoint)) {
-                    StopAnimation(instantiatedRope);
-                }*/
-
-        /*        if (Input.GetMouseButtonDown(0)) {
-                    Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                    RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero);
-                    if (hit.collider != null && hit.collider.gameObject.tag == "Point" && !ropeIsStillDrawing) {
-                        Debug.Log("Will draw a line towards " + hit.collider.gameObject.name);
-
-                        currentInstantiatedRope = SpawnRope(firstPoint, secondPoint); //GOOD kitoj klasej | test with this in test scene
-                        ropeIsStillDrawing = true;//StartUpdateOfRopeDrawClass(); //GOOD kitoj klasej | test with this in test scene
-                    }
-
-
-                    if (ropeIsStillDrawing) { //sitas buvo good | test with this in test scene
-                        CheckIfRopeIsTooLong(currentInstantiatedRope, firstPoint, secondPoint);
-                    }*/  // sita atkomentuok jei nori test
-
-
-
-        //}
-
-    }
 
     public bool RopeHasReachedPoint(GameObject rope, Transform startPoint, Transform targetPoint) {
         //firstPoint = startPoint;
@@ -118,8 +86,8 @@ public class RopeManager : MonoBehaviour {
         // Spawn the rope with the rotation towards the target point
         GameObject rope = Instantiate(ropePrefab, startPoint.position, rotation);
 
-        ropeSpriteRenderer = rope.GetComponent<SpriteRenderer>();
-        currentInstantiatedRope = rope;
+        //ropeSpriteRenderer = rope.GetComponent<SpriteRenderer>(); // gal reik comment del coroutines
+       // currentInstantiatedRope = rope; // gal reik comment del coroutines
         return rope;
     }
 
@@ -131,6 +99,22 @@ public class RopeManager : MonoBehaviour {
         return distance;
     }
 
+    private IEnumerator SpawnRopeAndWaitForCompletion(Transform startPoint, Transform targetPoint) {
+        // Spawn the rope
+
+        GameObject rope = SpawnRope(startPoint, targetPoint);
+
+        // Loop until the rope has reached the target point
+        while (!RopeHasReachedPoint(rope, startPoint, targetPoint)) {
+            yield return null; // Wait for the next frame
+        }
+        // Rope has reached the target point, coroutine is complete
+    }
+
+    // Method to spawn the rope and start the coroutine
+    public void SpawnRopeAndCheckCompletion(Transform startPoint, Transform targetPoint) {
+        StartCoroutine(SpawnRopeAndWaitForCompletion(startPoint, targetPoint));
+    }
 
 
 }
