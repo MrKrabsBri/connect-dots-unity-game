@@ -1,14 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using Unity.Mathematics;
-using UnityEngine.Rendering.Universal.Internal;
-using System.Drawing;
-using Unity.VisualScripting;
-using JetBrains.Annotations;
-using UnityEngine.UIElements;
-using System;
 
 [System.Serializable]
 public class LevelDataWrapper {
@@ -20,10 +12,9 @@ public class LevelData {
     public string[] level_data;
 }
 
-//[DefaultExecutionOrder(1)]
 public class ReadLevelDataJson : MonoBehaviour {
-    const float xDIVIDER = 36.63f;
-    const float yDIVIDER = 65.34f;
+    const float xDIVIDER = 36.63f; // scaled down Point coordinates on X axis to fit background
+    const float yDIVIDER = 65.34f; // scaled down Point coordinates on Y axis to fit background
     private string jsonFilePath;
 
     void Start() {
@@ -36,14 +27,10 @@ public class ReadLevelDataJson : MonoBehaviour {
         LevelDataWrapper levelDataWrapper = JsonUtility.FromJson<LevelDataWrapper>(jsonContent);
         int levelNumber = 1;
         int pointID = 0;
-        float pointCoordinate;
-        Dot levelPoint;
         List<List<Dot>> listOfAllLevels = new List<List<Dot>>();
 
         foreach (LevelData level in levelDataWrapper.levels) {
             List<Dot> pointsOfOneLevel = new List<Dot>();
-
-            //int tempCounter = 0; // counter for testing
 
             for (int i = 0; i < level.level_data.Length; i += 2) {
                 string xCoordinate = level.level_data[i];
@@ -52,12 +39,10 @@ public class ReadLevelDataJson : MonoBehaviour {
                 float xValue = float.Parse(xCoordinate) / xDIVIDER;
                 float yValue = -float.Parse(yCoordinate) / yDIVIDER;
 
-                Dot newDot = new Dot(xValue, yValue, pointID, false);
+                Dot newDot = new Dot(xValue, yValue);
                 pointsOfOneLevel.Add(newDot);
                 pointID++;
-                //tempCounter++;
             }
-
 
             listOfAllLevels.Add(pointsOfOneLevel);
             levelNumber++;
