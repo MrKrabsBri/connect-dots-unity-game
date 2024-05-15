@@ -13,8 +13,11 @@ public class LevelData {
 }
 
 public class ReadLevelDataJson : MonoBehaviour {
-    const float xDIVIDER = 36.63f; // scaled down Point coordinates on X axis to fit background
-    const float yDIVIDER = 65.34f; // scaled down Point coordinates on Y axis to fit background
+       const float xDIVIDER = 36.63f; // scaled down Point coordinates on X axis to fit background
+       const float yDIVIDER = 65.34f; // scaled down Point coordinates on Y axis to fit background
+/*    const float xDIVIDER = 1f;
+    const float yDIVIDER = 1f;*/
+
     private string jsonFilePath;
 
     void Start() {
@@ -22,7 +25,8 @@ public class ReadLevelDataJson : MonoBehaviour {
     }
 
     public List<List<Point>> ReadDataToLevelList() {
-        jsonFilePath = Application.dataPath + "/Data/level_data.json";
+        //jsonFilePath = Application.dataPath + "/Data/level_data.json";
+        jsonFilePath = Path.Combine(Application.streamingAssetsPath, "Data", "level_data.json");
         string jsonContent = File.ReadAllText(jsonFilePath);
         LevelDataWrapper levelDataWrapper = JsonUtility.FromJson<LevelDataWrapper>(jsonContent);
         int levelNumber = 1;
