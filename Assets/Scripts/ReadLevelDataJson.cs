@@ -21,16 +21,16 @@ public class ReadLevelDataJson : MonoBehaviour {
         ReadDataToLevelList();
     }
 
-    public List<List<Dot>> ReadDataToLevelList() {
+    public List<List<Point>> ReadDataToLevelList() {
         jsonFilePath = Application.dataPath + "/Data/level_data.json";
         string jsonContent = File.ReadAllText(jsonFilePath);
         LevelDataWrapper levelDataWrapper = JsonUtility.FromJson<LevelDataWrapper>(jsonContent);
         int levelNumber = 1;
         int pointID = 0;
-        List<List<Dot>> listOfAllLevels = new List<List<Dot>>();
+        List<List<Point>> listOfAllLevels = new List<List<Point>>();
 
         foreach (LevelData level in levelDataWrapper.levels) {
-            List<Dot> pointsOfOneLevel = new List<Dot>();
+            List<Point> pointsOfOneLevel = new List<Point>();
 
             for (int i = 0; i < level.level_data.Length; i += 2) {
                 string xCoordinate = level.level_data[i];
@@ -39,8 +39,8 @@ public class ReadLevelDataJson : MonoBehaviour {
                 float xValue = float.Parse(xCoordinate) / xDIVIDER;
                 float yValue = -float.Parse(yCoordinate) / yDIVIDER;
 
-                Dot newDot = new Dot(xValue, yValue);
-                pointsOfOneLevel.Add(newDot);
+                Point newPoint = new Point(xValue, yValue);
+                pointsOfOneLevel.Add(newPoint);
                 pointID++;
             }
 

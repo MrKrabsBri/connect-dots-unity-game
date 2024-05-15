@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour {
     Transform target;
 
 
-    List<Dot> dotListOfCurrentLevel;
+    List<Point> pointListOfCurrentLevel;
 
     public bool ropeIsStillDrawing = false;
     public void StartUpdateOfRopeDrawClass() {
@@ -57,9 +57,9 @@ public class GameManager : MonoBehaviour {
             if (LevelSelectionHandler.buttonValue != null) {
                 string buttonValue = LevelSelectionHandler.buttonValue;
                 int level = int.Parse(buttonValue);
-                dotListOfCurrentLevel = loadLevel.GetListOfDotsForThisLevel(level);
-                loadLevel.SpawnLevelDots(dotListOfCurrentLevel, level);
-                EnableOrDisablePoints(LoadLevel.listOfInstantiatedDots, false);
+                pointListOfCurrentLevel = loadLevel.GetListOfPointsForThisLevel(level);
+                loadLevel.SpawnLevelPoints(pointListOfCurrentLevel, level);
+                EnableOrDisablePoints(LoadLevel.listOfInstantiatedPoints, false);
             }
             else {
                 Debug.LogWarning("Button value is null.");
@@ -67,8 +67,8 @@ public class GameManager : MonoBehaviour {
         } catch (FormatException e) {
             Debug.LogError("Button value is not a valid number: " + e.Message);
         }
-        Debug.Log("Number of Points in the list " + dotListOfCurrentLevel.Count);
-        Debug.Log("instantiated point count : " + LoadLevel.listOfInstantiatedDots.Count);
+        Debug.Log("Number of Points in the list " + pointListOfCurrentLevel.Count);
+        Debug.Log("instantiated point count : " + LoadLevel.listOfInstantiatedPoints.Count);
     }
 
     void Update() {
@@ -84,11 +84,11 @@ public class GameManager : MonoBehaviour {
             Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             hit = Physics2D.Raycast(mousePosition, Vector2.zero);
 
-            if (hit.collider != null && hit.collider.gameObject == LoadLevel.listOfInstantiatedDots[0]
+            if (hit.collider != null && hit.collider.gameObject == LoadLevel.listOfInstantiatedPoints[0]
                             && !firstPointWasClicked) {
                 Debug.Log("You hit first point, it turns blue, rope is not drawn.");
                 firstPointWasClicked = true;
-                LoadLevel.listOfInstantiatedDots[1].GetComponent<CircleCollider2D>().enabled = true;
+                LoadLevel.listOfInstantiatedPoints[1].GetComponent<CircleCollider2D>().enabled = true;
             }
 
             if (hit.collider != null && hit.collider.gameObject.tag == "Point"
@@ -106,8 +106,8 @@ public class GameManager : MonoBehaviour {
 
             if (clickedOnTheLastPoint && !levelIsCompleted && !ropeIsDrawing) {
                 StartCoroutine(DrawTheFinalRope(0.5f, ropeManager,
-                                LoadLevel.listOfInstantiatedDots[LoadLevel.listOfInstantiatedDots.Count - 1].transform,
-                                LoadLevel.listOfInstantiatedDots[0].transform));
+                                LoadLevel.listOfInstantiatedPoints[LoadLevel.listOfInstantiatedPoints.Count - 1].transform,
+                                LoadLevel.listOfInstantiatedPoints[0].transform));
                 levelIsCompleted = true;
                 ropeIsDrawing = true;
 
@@ -116,12 +116,12 @@ public class GameManager : MonoBehaviour {
 
             if (!ropeIsDrawing && levelIsCompleted) {
                 StartCoroutine(Stall());
-   //             animator.SetTrigger("showing");                 // ?????????
+                //             animator.SetTrigger("showing");                 // ?????????
             }
 
         }
         if (!ropeIsDrawing && !clickedOnTheLastPoint) {
-            LoadLevel.listOfInstantiatedDots[numberOfClickedPoint].GetComponent<CircleCollider2D>().enabled = true;
+            LoadLevel.listOfInstantiatedPoints[numberOfClickedPoint].GetComponent<CircleCollider2D>().enabled = true;
         }
 
 
@@ -131,11 +131,11 @@ public class GameManager : MonoBehaviour {
     public void HandleDrawingRope(RaycastHit2D rayHit) {
         numberOfClickedPoint = int.Parse(rayHit.collider.gameObject.GetComponentInChildren<Text>().text);
         Debug.Log(numberOfClickedPoint);
-        target = LoadLevel.listOfInstantiatedDots[numberOfClickedPoint - 1].transform;
-        start = LoadLevel.listOfInstantiatedDots[numberOfClickedPoint - 2].transform;
+        target = LoadLevel.listOfInstantiatedPoints[numberOfClickedPoint - 1].transform;
+        start = LoadLevel.listOfInstantiatedPoints[numberOfClickedPoint - 2].transform;
         spawnedRope = ropeManager.SpawnRope(start, target);
 
-        if (numberOfClickedPoint == LoadLevel.listOfInstantiatedDots.Count) {
+        if (numberOfClickedPoint == LoadLevel.listOfInstantiatedPoints.Count) {
             clickedOnTheLastPoint = true;
         }
         ropeIsDrawing = true;

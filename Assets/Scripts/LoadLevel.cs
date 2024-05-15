@@ -4,37 +4,36 @@ using UnityEngine.UI;
 
 public class LoadLevel : MonoBehaviour {
 
-    public GameObject dotPrefab;
+    public GameObject pointPrefab;
     private ReadLevelDataJson levelDataJson;
-    public static List<GameObject> listOfInstantiatedDots;
-    //List<Dot> listOfLevelDots;
+    public static List<GameObject> listOfInstantiatedPoints;
 
-    public List<Dot> GetListOfDotsForThisLevel(int level) {
+    public List<Point> GetListOfPointsForThisLevel(int level) {
 
-        List<Dot> listOfThisLevelDots;
+        List<Point> listOfThisLevelPoints;
 
         levelDataJson = GetComponent<ReadLevelDataJson>();
-        List<List<Dot>> listOfAllLevels = levelDataJson.ReadDataToLevelList();
-        listOfThisLevelDots = listOfAllLevels[level - 1];
+        List<List<Point>> listOfAllLevels = levelDataJson.ReadDataToLevelList();
+        listOfThisLevelPoints = listOfAllLevels[level - 1];
 
-        return listOfThisLevelDots;
+        return listOfThisLevelPoints;
     }
 
-    public void SpawnLevelDots(List<Dot> dotsOfThisLevel, int level) {
+    public void SpawnLevelPoints(List<Point> pointsOfThisLevel, int level) {
 
-        if (level >= 1 && level <= dotsOfThisLevel.Count) {
-            int numberOfDot = 1;
-            listOfInstantiatedDots = new List<GameObject>();
-            foreach (Dot dot in dotsOfThisLevel) {
-                GameObject newDot = Instantiate(dotPrefab,
-                    new Vector3(dot.x.Value, dot.y.Value, 0f), Quaternion.identity);
+        if (level >= 1 && level <= pointsOfThisLevel.Count) {
+            int numberOfPoint = 1;
+            listOfInstantiatedPoints = new List<GameObject>();
+            foreach (Point point in pointsOfThisLevel) {
+                GameObject newPoint = Instantiate(pointPrefab,
+                    new Vector3(point.x.Value, point.y.Value, 0f), Quaternion.identity);
 
-                listOfInstantiatedDots.Add(newDot);
+                listOfInstantiatedPoints.Add(newPoint);
 
-                Text textField = newDot.GetComponentInChildren<Text>();
+                Text textField = newPoint.GetComponentInChildren<Text>();
                 if (textField != null) {
-                    textField.text = numberOfDot.ToString();
-                    numberOfDot++;
+                    textField.text = numberOfPoint.ToString();
+                    numberOfPoint++;
                 }
                 else {
                     Debug.LogWarning("Text field not found in instantiated object.");

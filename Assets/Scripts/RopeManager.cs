@@ -32,7 +32,7 @@ public class RopeManager : MonoBehaviour {
         ropeSpriteRenderer = rope.GetComponent<SpriteRenderer>();
         ropeHeight = ropeSpriteRenderer.size.y;
 
-        if (ropeHeight >= FindDistanceBetweenDots(startPoint, targetPoint)) {
+        if (ropeHeight >= FindDistanceBetweenPoints(startPoint, targetPoint)) {
             StopAnimation(rope);
             return true;
         }
@@ -66,7 +66,7 @@ public class RopeManager : MonoBehaviour {
         return rope;
     }
 
-    public float? FindDistanceBetweenDots(Transform startPoint, Transform targetPoint) {
+    public float? FindDistanceBetweenPoints(Transform startPoint, Transform targetPoint) {
 
         Vector3 startPosition = startPoint.position;
         Vector3 targetPosition = targetPoint.position;
